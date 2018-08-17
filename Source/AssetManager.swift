@@ -19,9 +19,12 @@ open class AssetManager {
     guard PHPhotoLibrary.authorizationStatus() == .authorized else { return }
 
     DispatchQueue.global(qos: .background).async {
+      let fetchOptions = PHFetchOptions()
+      fetchOptions.sortDescriptors = [NSSortDescriptor(key:"creationDate", ascending: true)]
+      fetchOptions.predicate = NSPredicate(format: "creationDate < %@", NSDate())
       let fetchResult = configuration.allowVideoSelection
-        ? PHAsset.fetchAssets(with: PHFetchOptions())
-        : PHAsset.fetchAssets(with: .image, options: PHFetchOptions())
+        ? PHAsset.fetchAssets(with: fetchOptions)
+        : PHAsset.fetchAssets(with: .image, options: fetchOptions)
 
       if fetchResult.count > 0 {
         var assets = [PHAsset]()
